@@ -41,7 +41,9 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 .registration { margin-top: 34px; padding: 27px 30px 29px; border: 1px solid var(--line); border-radius: 13px; background: var(--paper); box-shadow: 0 7px 24px #00000010; }
 .registration-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.registration-intro { min-width: 0; }
 .registration h1 { margin: 0; color: var(--accent); font-size: 36px; line-height: 1.1; font-weight: 400; letter-spacing: -.5px; }
+.registration-intro p { margin: 14px 0 0; color: var(--soft); font-size: 13px; line-height: 1.5; }
 .create-post-button { display: inline-flex; min-height: 46px; align-items: center; justify-content: center; gap: 8px; padding: 0 18px; border: 1px solid var(--accent); border-radius: 8px; background: var(--accent); color: var(--accent-foreground); font-size: 14px; font-weight: 600; cursor: pointer; box-shadow: 0 3px 8px #285aa626; transition: background .16s ease, box-shadow .16s ease, transform .16s ease; }
 .create-post-button svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
 .create-post-button:hover { background: var(--accent-hover); box-shadow: 0 5px 12px #285aa633; transform: translateY(-1px); }
@@ -258,17 +260,13 @@ button, input, select, textarea { font: inherit; color: inherit; }
   .delete-contact-field input:focus { background: #252c33; }
   .filter-panel { background: #2a3036; }
   .student-row, .student-row:nth-child(odd) {
-    --ink: #30475e;
-    --soft: #687887;
-    --line: #aec4d4;
-    --paper: #fffaf0;
-    --tint: #aec4d4;
-    --accent: #36556f;
-    --accent-foreground: #f5efe1;
-    color: #30475e;
-    background: #fffaf0 !important;
+    --paper: #20262c;
+    --tint: #36434e;
+    background: #20262ce8 !important;
   }
-  .student-row:hover { border-color: #aec4d4; }
+  .student-row:hover { border-color: #637f95; }
+  .student-row .copy-icon-button { border-color: #637f95; background: #36434e; color: #ffffff; }
+  .student-row .copy-icon-button:hover { border-color: #aec4d4; background: #455461; }
   .post-dialog { background: linear-gradient(145deg, #303941f2, #1c2228eb); }
   .delete-dialog::backdrop { background: #020711a8; }
   .form-submit .close-post-form, .dialog-choices button, .cancel-delete {

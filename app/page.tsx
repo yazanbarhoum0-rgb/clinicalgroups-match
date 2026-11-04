@@ -231,7 +231,10 @@ export default function Home() {
 
       <section className="registration" id="top">
         <div className="registration-heading">
-          <h1>Find your group</h1>
+          <div className="registration-intro">
+            <h1>Find your group</h1>
+            <p>Hello! You can share what you’re looking for, or scroll down to see if anything meets your needs. Good luck!</p>
+          </div>
           <button
             className="create-post-button"
             type="button"
