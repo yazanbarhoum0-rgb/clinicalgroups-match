@@ -1,15 +1,24 @@
 create table if not exists public.clinical_listings (
   id uuid primary key default gen_random_uuid(),
-  type text not null check (type in ('individual', 'group')),
-  gender text not null check (gender in ('male', 'female')),
+  type text not null check (type in ('individual', 'group', 'looking_to')),
+  gender text not null,
   name text check (name is null or length(trim(name)) between 1 and 80),
   members_count smallint,
   contact text not null check (length(trim(contact)) between 1 and 150),
   notes text check (notes is null or length(notes) <= 280),
+  looking_for text,
   created_at timestamptz not null default now(),
+  constraint clinical_listings_gender_check check (
+    (type = 'looking_to' and gender in ('male', 'female', 'both'))
+    or (type in ('individual', 'group') and gender in ('male', 'female'))
+  ),
   constraint clinical_listings_group_size_check check (
     (type = 'group' and members_count is not null and members_count between 2 and 11)
-    or (type = 'individual' and members_count is null)
+    or (type in ('individual', 'looking_to') and members_count is null)
+  ),
+  constraint clinical_listings_looking_for_check check (
+    (type = 'looking_to' and looking_for is not null and length(trim(looking_for)) between 1 and 280)
+    or (type <> 'looking_to' and looking_for is null)
   )
 );
 

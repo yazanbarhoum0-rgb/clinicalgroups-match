@@ -9,8 +9,7 @@ const patuaOne = Patua_One({
 });
 
 export const metadata: Metadata = {
-  title: "Clinical Match — BAU Medical Community",
-  description: "Find your clinical group classmates and make your rotations better together.",
+  title: "Vitanova Match",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
