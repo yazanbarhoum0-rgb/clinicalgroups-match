@@ -366,7 +366,6 @@ export default function Home() {
                 {listing.type === "group" ? <svg className="listing-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3.5 20v-1.2a5.5 5.5 0 0 1 11 0V20M16 5.5a3 3 0 0 1 0 5.8M17 14.2a4.5 4.5 0 0 1 3.5 4.4V20"/></svg> : listing.type === "looking_to" ? <svg className="listing-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg> : <svg className="listing-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/></svg>}
                 <h3
                   className={`listing-kind listing-kind-${listing.type}`}
-                  style={listing.type === "group" ? { backgroundColor: "#285aa6", color: "#ffffff" } : undefined}
                 >
                   {listing.type === "group" ? "Group" : listing.type === "looking_to" ? "Looking for" : "Individual"}
                 </h3>
