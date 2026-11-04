@@ -57,14 +57,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .type-switch::before { content: ""; position: absolute; z-index: 0; top: 3px; bottom: 3px; left: 3px; width: calc(50% - 3px); border-radius: 5px; background: var(--paper); box-shadow: 0 1px 4px #0000001c; opacity: 0; transform: translateX(0); transition: transform .24s cubic-bezier(.2,.8,.2,1), opacity .16s ease; pointer-events: none; }
 .type-switch:has(input:checked)::before { opacity: 1; }
 .type-switch:has(label:nth-child(2) input:checked)::before { transform: translateX(100%); }
-.listing-form-switch, .listing-type-switch { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.listing-form-switch::before, .listing-type-switch::before { width: calc(33.333% - 2px); }
-.listing-form-switch:has(label:nth-child(3) input:checked)::before, .listing-type-switch:has(label:nth-child(3) input:checked)::before { transform: translateX(200%); }
-.gender-switch-both { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.gender-switch-both::before { width: calc(33.333% - 2px); }
-.gender-switch-both:has(label:nth-child(3) input:checked)::before { transform: translateX(200%); }
-.gender-switch-both label { gap: 4px; padding: 0 3px; font-size: 11px; white-space: nowrap; }
-.gender-switch-both .switch-icon { width: 10px; height: 10px; flex-basis: 10px; }
+.listing-form-switch, .listing-type-switch { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.listing-form-switch::before, .listing-type-switch::before { width: calc(50% - 3px); }
 .type-switch label { position: relative; z-index: 1; display: flex; width: 100%; height: 100%; min-width: 0; align-items: center; justify-content: center; gap: 6px; padding: 0 6px; border-radius: 5px; color: var(--ink); font-size: 12px; white-space: nowrap; cursor: pointer; }
 .type-switch label span { min-width: 0; }
 .switch-icon { width: 12px; height: 12px; flex: 0 0 12px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
@@ -92,19 +86,24 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .section-heading > span { color: var(--soft); font-size: 11px; }
 .listing-type-field { min-width: 0; margin: 14px 0; padding: 0; border: 0; }
 .listing-type-field legend { margin-bottom: 7px; padding: 0; color: var(--ink); font-size: 12px; font-weight: 600; }
-.listing-type-switch { max-width: 620px; }
 .listing-type-switch label { white-space: normal; line-height: 1.15; font-size: 11px; }
 .listing-type-switch label span { display: block; flex: 1 1 0; width: 0; min-width: 0; white-space: normal; overflow-wrap: anywhere; text-align: center; }
 .goal-icon { width: 12px; height: 12px; flex: 0 0 12px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 .filter-panel { margin: 14px 0 16px; padding: 13px 14px 14px; border: 1px solid var(--line); border-radius: 11px; background: #eaf0f8; box-shadow: 0 2px 8px #263b5008; }
+.listing-view-prompt { margin: 0 0 12px; color: var(--accent); font-size: 18px; line-height: 1.3; }
 .filters { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: end; gap: 12px; }
 .filters-title { margin: 0 0 12px; padding-bottom: 10px; border-bottom: 1px solid var(--line); color: var(--ink); font-size: 12px; font-weight: 650; }
 .filters-individual { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .filters label { display: grid; min-width: 0; gap: 7px; color: var(--ink); font-size: 11px; font-weight: 600; }
+.filters label.latest-first-filter { display: flex; min-height: 40px; flex-direction: row; align-self: end; align-items: center; gap: 16px; font-size: 14px; }
 .filters input, .filters select { padding: 9px 10px; border-color: var(--line); border-radius: 7px; background: var(--paper); font-size: 12px; }
-.latest-filter-button { display: flex; width: 100%; min-height: 40px; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 9px; border: 2px solid var(--accent); border-radius: 7px; background: var(--paper); color: var(--ink); font-size: 12px; font-weight: 600; text-align: left; cursor: pointer; transition: background .16s ease, border-color .16s ease, color .16s ease; }
-.latest-filter-button:hover { border-color: var(--ink); background: var(--tint); }
-.latest-filter-button.active { border-color: var(--accent); background: var(--accent); color: var(--accent-foreground); box-shadow: 0 0 0 3px var(--accent-focus); }
+.latest-toggle-control { --input-focus: #2d8cf0; --bg-color: #fff; --main-color: #323232; position: relative; display: flex; width: 50px; height: 20px; min-height: 20px; flex: 0 0 50px; flex-direction: column; align-items: center; justify-content: center; }
+.latest-toggle-checkbox { position: absolute; width: 1px !important; height: 1px !important; min-height: 1px !important; margin: 0; padding: 0 !important; border: 0 !important; opacity: 0; }
+.latest-toggle-slider { position: absolute; top: 0; right: 0; bottom: 0; left: 0; box-sizing: border-box; border: 2px solid var(--main-color); border-radius: 5px; background: var(--bg-color); box-shadow: 4px 4px var(--main-color); cursor: pointer; transition: .3s; }
+.latest-toggle-slider::before { position: absolute; bottom: 2px; left: -2px; box-sizing: border-box; width: 20px; height: 20px; border: 2px solid var(--main-color); border-radius: 5px; background: var(--bg-color); box-shadow: 0 3px 0 var(--main-color); content: ""; transition: transform .3s; }
+.latest-toggle-checkbox:checked + .latest-toggle-slider { background: var(--input-focus); }
+.latest-toggle-checkbox:checked + .latest-toggle-slider::before { transform: translateX(30px); }
+.latest-toggle-checkbox:focus-visible + .latest-toggle-slider { outline: 3px solid var(--accent); outline-offset: 3px; }
 .student-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-content: start; column-gap: 14px; row-gap: 0; margin-top: 12px; padding: 20px 22px; border: 1px solid #ffffffd9; border-radius: 12px; background: #fffaf0; -webkit-backdrop-filter: blur(22px) saturate(160%); backdrop-filter: blur(22px) saturate(160%); box-shadow: 0 12px 30px #30475e18, inset 0 1px 0 #ffffff; transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease; }
 .student-row:nth-child(odd) { background: #fffaf0; }
 .student-row:hover { border-color: #aec4d4; box-shadow: 0 16px 36px #30475e24, inset 0 1px 0 #ffffff; transform: translateY(-1px); }
@@ -116,7 +115,6 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .listing-heading h3.listing-kind { width: fit-content; max-width: 100%; padding: 5px 9px; border-radius: 6px; font-size: 12px; }
 .listing-heading h3.listing-kind-group { background-color: #36556f; color: #f5efe1; }
 .listing-heading h3.listing-kind-individual { background: #166534; color: #ffffff; }
-.listing-heading h3.listing-kind-looking_to { background: #aec4d4; color: #30475e; }
 .listing-heading h3.listing-kind { background: #36556f !important; color: #ffffff !important; }
 .student-info p { margin: 8px 0 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: 7px; color: var(--ink); font-size: 16px; line-height: 1.6; overflow-wrap: anywhere; }
 .student-info p.listing-posted { color: var(--soft); font-size: 14px; }
@@ -197,7 +195,6 @@ button, input, select, textarea { font: inherit; color: inherit; }
   .post-dialog h2 { font-size: 19px; }
   .type-field legend { font-size: 13px; }
   .type-switch label { gap: 5px; padding: 0 4px; font-size: 12px; }
-  .gender-switch-both label { gap: 3px; padding: 0 2px; font-size: 10px; }
   .student-row { display: flex; flex-direction: column; align-items: stretch; gap: 10px; padding: 16px; }
   .student-card-header { display: flex; min-width: 0; align-items: center; justify-content: space-between; gap: 8px; }
   .student-info { width: 100%; }
@@ -215,8 +212,6 @@ button, input, select, textarea { font: inherit; color: inherit; }
   .create-post-button { min-height: 36px; gap: 4px; padding: 0 6px; font-size: clamp(10px, 3.4vw, 11px); }
   .create-post-button svg { width: 12px; height: 12px; flex-basis: 12px; }
   .registration { padding: 18px 13px; }
-  .gender-switch-both label { gap: 2px; font-size: 9px; }
-  .gender-switch-both .switch-icon { width: 9px; height: 9px; flex-basis: 9px; }
   .filters { grid-template-columns: minmax(0, 1fr); }
   .student-row { padding: 15px 13px; }
   .copy-icon-button { min-width: 92px; height: 44px; margin-left: 8px; }

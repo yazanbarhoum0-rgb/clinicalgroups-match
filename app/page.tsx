@@ -3,8 +3,8 @@
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
-type ListingType = "individual" | "group" | "looking_to";
-type Gender = "male" | "female" | "both";
+type ListingType = "individual" | "group";
+type Gender = "male" | "female";
 type FoundGroupAnswer = "yes" | "no";
 type Listing = {
   id: string;
@@ -14,7 +14,6 @@ type Listing = {
   members_count: number | null;
   contact: string;
   notes: string | null;
-  looking_for: string | null;
   created_at: string;
 };
 
@@ -91,7 +90,7 @@ export default function Home() {
       try {
         const { data, error } = await supabase
           .from("clinical_listings")
-          .select("id,type,gender,name,members_count,contact,notes,looking_for,created_at")
+          .select("id,type,gender,name,members_count,contact,notes,created_at")
           .order("created_at", { ascending: false });
         if (!active) return;
         if (error) setLoadError("Listings could not be loaded. Run the latest Supabase migration.");
@@ -109,9 +108,7 @@ export default function Home() {
   const visibleListings = useMemo(() => {
     const filtered = listings.filter((listing) => {
       const matchesType = listing.type === typeFilter;
-      const matchesGender = genderFilter === "all"
-        || listing.gender === genderFilter
-        || (listing.type === "looking_to" && listing.gender === "both" && genderFilter !== "both");
+      const matchesGender = genderFilter === "all" || listing.gender === genderFilter;
       const matchesSize = groupSizeFilter === "all" || String(listing.members_count) === groupSizeFilter;
       return matchesType && matchesGender && matchesSize;
     });
@@ -119,9 +116,7 @@ export default function Home() {
       ? [...filtered].sort((first, second) => Date.parse(second.created_at) - Date.parse(first.created_at))
       : filtered;
   }, [listings, typeFilter, genderFilter, groupSizeFilter, listingOrder]);
-  const availableGenders = form.type === "looking_to"
-    ? (["male", "female", "both"] as const)
-    : (["male", "female"] as const);
+  const availableGenders = ["male", "female"] as const;
 
   async function submitListing(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -138,9 +133,8 @@ export default function Home() {
         name: form.type !== "group" ? form.name.trim() || null : null,
         members_count: form.type === "group" ? Number(form.membersCount) : null,
         contact: form.contact.trim(),
-        notes: form.type === "looking_to" ? null : form.notes.trim() || null,
-        looking_for: form.type === "looking_to" ? form.notes.trim() : null,
-      }).select("id,type,gender,name,members_count,contact,notes,looking_for,created_at").single();
+        notes: form.notes.trim() || null,
+      }).select("id,type,gender,name,members_count,contact,notes,created_at").single();
       if (error) {
         setMessage("Could not post. Check that the Supabase schema is up to date.");
         return;
@@ -252,16 +246,16 @@ export default function Home() {
         <form className="registration-form" id="post-form" onSubmit={submitListing}>
           <fieldset className="field type-field"><legend>What are you posting?</legend>
             <div className="type-switch listing-form-switch">
-              {(["individual", "group", "looking_to"] as const).map((type) => <label className={form.type === type ? "selected" : ""} key={type}>
-                <input type="radio" name="listing-type" value={type} checked={form.type === type} onChange={() => setForm((current) => ({ ...current, type, gender: type !== "looking_to" && current.gender === "both" ? "" : current.gender }))} />
-                {type === "group" ? <svg className="switch-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3.5 20v-1.2a5.5 5.5 0 0 1 11 0V20M16 5.5a3 3 0 0 1 0 5.8M17 14.2a4.5 4.5 0 0 1 3.5 4.4V20"/></svg> : type === "looking_to" ? <svg className="switch-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg> : <svg className="switch-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/></svg>}
-                <span>{type === "individual" ? "Individual" : type === "group" ? "Group" : "Looking for"}</span>
+              {(["individual", "group"] as const).map((type) => <label className={form.type === type ? "selected" : ""} key={type}>
+                <input type="radio" name="listing-type" value={type} checked={form.type === type} onChange={() => setForm((current) => ({ ...current, type }))} />
+                {type === "group" ? <svg className="switch-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3.5 20v-1.2a5.5 5.5 0 0 1 11 0V20M16 5.5a3 3 0 0 1 0 5.8M17 14.2a4.5 4.5 0 0 1 3.5 4.4V20"/></svg> : <svg className="switch-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/></svg>}
+                <span>{type === "individual" ? "Individual" : "Group"}</span>
               </label>)}
             </div>
           </fieldset>
 
-          <fieldset className="field type-field"><legend>{form.type === "group" ? "Group gender" : form.type === "looking_to" ? "Eligible gender" : "Gender"} <small>Shown publicly</small></legend>
-            <div className={`type-switch ${form.type === "looking_to" ? "gender-switch-both" : ""}`}>
+          <fieldset className="field type-field"><legend>{form.type === "group" ? "Group gender" : "Gender"} <small>Shown publicly</small></legend>
+            <div className="type-switch">
               {availableGenders.map((gender) => <label className={form.gender === gender ? "selected" : ""} key={gender}>
                 <input type="radio" name="listing-gender" value={gender} required checked={form.gender === gender} onChange={() => setForm({ ...form, gender })} />
                 {gender === "male" ? <svg className="switch-icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8" cy="12" r="5"/><path d="m11.5 8.5 6-6M13 2h4.5v4.5"/></svg> : gender === "female" ? <svg className="switch-icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="7" r="5"/><path d="M10 12v7M6.5 15.5h7"/></svg> : <svg className="switch-icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="7" cy="7" r="3"/><circle cx="14" cy="7" r="3"/><path d="M1.5 17a5.5 5.5 0 0 1 11 0M9 17a5.5 5.5 0 0 1 9.5-3.7"/></svg>}
@@ -282,8 +276,8 @@ export default function Home() {
             <input required maxLength={150} value={form.contact} onChange={(event) => setForm({ ...form, contact: event.target.value })} placeholder="Telegram @ or WhatsApp" />
           </label>
 
-          <label className="field field-wide"><span>{form.type === "looking_to" ? "Looking for" : "Notes"} <small>{form.type === "looking_to" ? "For group leaders · Eligible people can contact you" : "Optional"}</small></span>
-            <textarea maxLength={280} rows={3} required={form.type === "looking_to"} value={form.notes} onChange={(event) => setForm({ ...form, notes: event.target.value })} placeholder={form.type === "looking_to" ? "Describe what you’re looking for" : "Anything else?"} />
+          <label className="field field-wide"><span>What’s missing in your group? / Notes <small>Optional</small></span>
+            <textarea maxLength={280} rows={3} value={form.notes} onChange={(event) => setForm({ ...form, notes: event.target.value })} placeholder="What are you looking for in a group?" />
           </label>
 
           <div className="form-submit field-wide">
@@ -302,7 +296,7 @@ export default function Home() {
         <fieldset className="listing-type-field">
           <legend>Show</legend>
           <div className="type-switch listing-type-switch">
-            {(["group", "individual", "looking_to"] as const).map((type) => (
+            {(["group", "individual"] as const).map((type) => (
               <label className={typeFilter === type ? "selected" : ""} key={type}>
                 <input
                   type="radio"
@@ -319,18 +313,13 @@ export default function Home() {
                     <circle cx="9" cy="8" r="3" />
                     <path d="M3.5 20v-1.2a5.5 5.5 0 0 1 11 0V20M16 5.5a3 3 0 0 1 0 5.8M17 14.2a4.5 4.5 0 0 1 3.5 4.4V20" />
                   </svg>
-                ) : type === "looking_to" ? (
-                  <svg className="goal-icon" viewBox="0 0 24 24" aria-hidden="true">
-                    <circle cx="10.5" cy="10.5" r="6.5" />
-                    <path d="m15.5 15.5 5 5" />
-                  </svg>
                 ) : (
                   <svg className="goal-icon" viewBox="0 0 24 24" aria-hidden="true">
                     <circle cx="9" cy="8" r="3" />
                     <path d="M3.5 20v-1.2a5.5 5.5 0 0 1 11 0V20M19 8v6M16 11h6" />
                   </svg>
                 )}
-                <span>{type === "group" ? "Find your group" : type === "individual" ? "Create your own group" : "Looking for"}</span>
+                <span>{type === "group" ? "Groups" : "Individuals"}</span>
               </label>
             ))}
           </div>
@@ -338,10 +327,18 @@ export default function Home() {
         <div className="filter-panel">
           <h3 className="filters-title">Filters</h3>
           <div className={typeFilter !== "group" ? "filters filters-individual" : "filters"}>
-          <label>Order
-            <button className={`latest-filter-button ${listingOrder === "latest" ? "active" : ""}`} type="button" aria-pressed={listingOrder === "latest"} onClick={() => setListingOrder((current) => current === "latest" ? "random" : "latest")}>
-              <span>Latest</span>
-            </button>
+          <label className="latest-first-filter"><span>Latest first</span>
+            <span className="latest-toggle-control">
+              <input
+                className="latest-toggle-checkbox"
+                type="checkbox"
+                role="switch"
+                aria-label="Sort listings by latest"
+                checked={listingOrder === "latest"}
+                onChange={(event) => setListingOrder(event.target.checked ? "latest" : "random")}
+              />
+              <span className="latest-toggle-slider" aria-hidden="true" />
+            </span>
           </label>
           {typeFilter === "group" && <label>Group size
             <select value={groupSizeFilter} onChange={(event) => setGroupSizeFilter(event.target.value)}>
@@ -354,11 +351,11 @@ export default function Home() {
               <option value="all">All</option>
               <option value="male">Male</option>
               <option value="female">Female</option>
-              <option value="both">Both</option>
             </select>
           </label>
           </div>
         </div>
+        <p className="listing-view-prompt">{typeFilter === "group" ? "Find your group" : "Create your own group"}</p>
         {listingMessage && <p className="listing-status" role="status">{listingMessage}</p>}
         {loadError && <p className="setup-message">{loadError}</p>}
         {!loading && !loadError && visibleListings.length === 0 && <p className="empty-state">No listings found.</p>}
@@ -366,11 +363,11 @@ export default function Home() {
           {loading ? <div className="listing-loader-stage" role="status" aria-label="Loading listings"><div className="banter-loader" aria-hidden="true">{Array.from({ length: 9 }, (_, index) => <div className="banter-loader__box" key={index} />)}</div></div> : visibleListings.map((listing) => <article className="student-row" key={listing.id}>
             <div className="student-card-header">
               <div className="listing-heading">
-                {listing.type === "group" ? <svg className="listing-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3.5 20v-1.2a5.5 5.5 0 0 1 11 0V20M16 5.5a3 3 0 0 1 0 5.8M17 14.2a4.5 4.5 0 0 1 3.5 4.4V20"/></svg> : listing.type === "looking_to" ? <svg className="listing-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg> : <svg className="listing-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/></svg>}
+                {listing.type === "group" ? <svg className="listing-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3.5 20v-1.2a5.5 5.5 0 0 1 11 0V20M16 5.5a3 3 0 0 1 0 5.8M17 14.2a4.5 4.5 0 0 1 3.5 4.4V20"/></svg> : <svg className="listing-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/></svg>}
                 <h3
                   className={`listing-kind listing-kind-${listing.type}`}
                 >
-                  {listing.type === "group" ? "Group" : listing.type === "looking_to" ? "Looking for" : "Individual"}
+                  {listing.type === "group" ? "Group" : "Individual"}
                 </h3>
               </div>
               <div className="listing-actions">
@@ -390,10 +387,10 @@ export default function Home() {
             </div>
             <div className="student-info">
               {listing.type === "individual" && listing.name && <p className="listing-name"><strong>Name:</strong> {listing.name}</p>}
-              <p><strong>{listing.type === "looking_to" ? "Eligible gender:" : "Gender:"}</strong> <span className="listing-gender-value">{listing.gender === "male" ? <svg className="listing-gender-icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8" cy="12" r="5"/><path d="m11.5 8.5 6-6M13 2h4.5v4.5"/></svg> : listing.gender === "female" ? <svg className="listing-gender-icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="7" r="5"/><path d="M10 12v7M6.5 15.5h7"/></svg> : <svg className="listing-gender-icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="7" cy="7" r="3"/><circle cx="14" cy="7" r="3"/><path d="M1.5 17a5.5 5.5 0 0 1 11 0M9 17a5.5 5.5 0 0 1 9.5-3.7"/></svg>}{listing.gender === "both" ? "Both" : listing.gender[0].toUpperCase() + listing.gender.slice(1)}</span></p>
+              <p><strong>Gender:</strong> <span className="listing-gender-value">{listing.gender === "male" ? <svg className="listing-gender-icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8" cy="12" r="5"/><path d="m11.5 8.5 6-6M13 2h4.5v4.5"/></svg> : <svg className="listing-gender-icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="7" r="5"/><path d="M10 12v7M6.5 15.5h7"/></svg>}{listing.gender[0].toUpperCase() + listing.gender.slice(1)}</span></p>
               {listing.type === "group" && <p><strong>Group size:</strong> {listing.members_count} members</p>}
               <p className="listing-posted"><time dateTime={listing.created_at} title={new Date(listing.created_at).toLocaleString()}>Posted {formatTimeAgo(listing.created_at)}</time></p>
-              {listing.type === "looking_to" ? listing.looking_for && <p className="listing-notes"><strong>Looking for:</strong> {listing.looking_for}</p> : listing.notes && <p className="listing-notes"><strong>Notes:</strong> {listing.notes}</p>}
+              {listing.notes && <p className="listing-notes"><strong>Notes:</strong> {listing.notes}</p>}
               <p className="listing-contact"><strong>Contact:</strong> {listing.contact}</p>
             </div>
           </article>)}

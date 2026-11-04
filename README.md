@@ -1,6 +1,6 @@
 # Clinical Match · BAU Medical Community
 
-A minimal one-page matching board. Students can list themselves as an individual, post a group, or create a “Looking for” post describing what they need. Each listing includes a public contact method, and groups list their member count.
+A minimal one-page matching board. Students can list themselves as an individual or post a group. Each listing includes a public contact method, and groups list their member count.
 
 ## Supabase setup
 
